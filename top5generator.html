@@ -415,7 +415,7 @@
   
                }
   
-               ShowPreviewToUser(allhtmlcontent);
+                   ShowPreviewToUser(allhtmlcontent);
                 }
                 catch(ex)
                 {
@@ -633,8 +633,10 @@
 
              function TextChanging()
              {
-              $( ".generateContentvalue" ).change(function() {
-                     LivePreview();
+            
+               $(".generateContentvalue").on("input", function(){
+                          // Print entered value in a div box
+                          LivePreview();
                });
 
              }
