@@ -1,0 +1,838 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <title></title><title></title>>
+    
+  <link href='https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css' rel='stylesheet'/>
+  <script src='https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js'></script>
+  <script src='https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js'></script>
+  </head>
+
+<body>
+      
+
+  <div id="maincontentcreatorpanel">
+    <style>
+      .loader {
+        border: 16px solid #f3f3f3;
+        border-radius: 50%;
+        border-top: 16px solid #3498db;
+        width: 100px;
+        height: 100px;
+        -webkit-animation: spin 2s linear infinite; /* Safari */
+        animation: spin 2s linear infinite;
+      }
+      
+      /* Safari */
+      @-webkit-keyframes spin {
+        0% { -webkit-transform: rotate(0deg); }
+        100% { -webkit-transform: rotate(360deg); }
+      }
+      
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+      </style>
+   <script type='text/javascript'>
+  
+                var findeheaderrstr='$$$$$headercontent';
+                var findbodystr='$$$$$bodycontent';
+                var findebottomrrstr='$$$$$bottomcontent';
+                var isHeader=true;
+                var isBottom=true;
+                var isPreview=true;
+                var isOutput=true;
+                var Mainheadertemplatecontent="";
+                var Mainbodytemplatecontent="";
+                var Mainbottomtemplatecontent="";
+                var headertemplatecontent="";
+                var bodytemplatecontent="";
+                var bottomtemplatecontent="";
+                var GbodyCount=1;
+                var MainDomainUrl=window.location.origin+"/p/";
+                var headertemplatecontenturl="templateheadertopmovies.html";
+                var bodytemplatecontenturl="";
+                var bottomtemplatecontenturl="templatebottomtopmovies.html";
+                var wrapperContentTagName='coustomcontentsection'; // VARIABLE CAN NOT USED IN REGEX
+                var DtxtboxId=0;
+                var settingAutoInterval=null;
+                var IsPauseSave=false;
+                
+  
+              $(document).ready(function(){
+                  
+                  try{
+                  ChangeDomainIfLocal();
+                  ApplySettings();
+                  GetTemplateFromServer(AllloadCallBack);
+                  
+                  }
+                  catch(ex)
+                  {
+                    customhandleExcption("Problem in loading","documenready",ex);
+                  }
+  
+  
+              });
+          
+          function CopyHtmlBlogContent()
+          {
+            try
+            {
+             var copyText = document.getElementById("allblogcontent");
+             copyText.select();
+              document.execCommand("copy");
+            }
+            catch(ex)
+            {
+              customhandleExcption("Problem in copy text","CopyHtmlBlogContent",ex);
+            }
+
+
+          }
+            
+            function ChangeDomainIfLocal()
+            {
+              try{
+                if(window.location.href.indexOf("localhost")!=-1)
+                {
+                  MainDomainUrl=window.location.origin+"/" +window.location.href.split("/")[3]+"/p/";
+                }
+              }
+              catch(ex)
+              {
+                customhandleExcption("check your hosting parent url is not correct","ChangeDomainIfLocal",ex);
+              }
+
+            }
+            
+
+             function AllloadCallBack()
+             {
+              try{
+                  //REMOVE LOADER
+                $(".loader").css("display","none");
+                  IsPauseSave=true;
+                  ApplySettings(2);
+                  IsPauseSave=false;
+                  AutoSaveSettings();
+                  TextChanging();
+              }
+              catch(ex)
+              {
+                customhandleExcption("problem in start callback","AllloadCallBack",ex);
+              }
+          
+  
+  
+             }
+             
+         
+              function GetTemplateFromServer(callback)
+              {
+               
+         
+                //SET COUNT
+                GbodyCount= parseInt( $("#selecttop").val());
+                bodytemplatecontenturl=$("#seletemplate").val();
+            
+                //GET HEADER
+                  $.get(MainDomainUrl+headertemplatecontenturl, function(headertmpdata, status){
+                    //ASSIGN GLOBAL VARIBLES
+        
+                     Mainheadertemplatecontent=GetFilterDataFromRawContent(headertmpdata);
+          
+                    //GET BODY
+                     $.get(MainDomainUrl+bodytemplatecontenturl, function(bodytmpdata, status){
+                             //ASSIGN GLOBAL VARIBLES
+                           Mainbodytemplatecontent=GetFilterDataFromRawContent(bodytmpdata);   
+  
+                              //GET BOTTOM
+                             $.get(MainDomainUrl+bottomtemplatecontenturl, function(bottomtmpdata, status){
+                                //ASSIGN GLOBAL VARIBLES
+                                  Mainbottomtemplatecontent=GetFilterDataFromRawContent(bottomtmpdata);
+
+                                    GetAlData(true,true,true,callback);
+                              });   
+                      });  
+  
+                    
+                     
+                  });    
+   
+              }
+             
+  
+  
+  
+              function GetFilterDataFromRawContent(data)
+              {
+                try
+                {
+                  var returnData="";
+                  var fi=data.match("<coustomcontentsection>");
+                  var li=data.match("</coustomcontentsection>");
+  
+                  returnData= data.substring(fi.index,li.index).replace("<coustomcontentsection>","");
+  
+                  if(returnData=="")
+                  {
+                    console.log("GetFilterDataFromRawContent: template is not valid");
+                  }
+                }
+                catch(ex)
+                {
+                   customhandleExcption("GetFilterDataFromRawContent",ex);
+                }
+                  return returnData;
+              } 
+        
+  
+              
+  
+              function GetAlData(IsHeaderChange,IsBodyChange,IsFooterChange,callback)
+             {
+               //SET ZERO
+               DtxtboxId=0;
+      
+               
+              if(IsHeaderChange && Mainheadertemplatecontent!=="")
+              {
+                headertemplatecontent=   isHeader?Mainheadertemplatecontent:"";
+                
+                  
+                  Generateheaer(Mainheadertemplatecontent);
+                 
+                
+              }
+              if(IsBodyChange&&Mainbodytemplatecontent!=="")
+              {
+                bodytemplatecontent=Mainbodytemplatecontent;
+                Generatebody(Mainbodytemplatecontent,GbodyCount);
+                
+              }
+              if(IsFooterChange&&Mainbottomtemplatecontent!=="")
+              {
+                bottomtemplatecontent=isBottom?Mainbottomtemplatecontent:"";
+                GenerateBottom(Mainbottomtemplatecontent);
+              
+                
+              }
+              if(callback)
+              {
+                callback();
+              }
+             
+  
+             
+            
+  
+           }
+           function FetchTemplateDataAndRender()
+             {
+                
+                try
+                {
+                        $(".loader").css("display","block");
+                        IsPauseSave=true;
+                         $("#allcontent").html("");
+                        //$("#bodypanel").remove();
+                        //$("#bttompanel").remove();
+                        //SET COUNT
+                        bodytemplatecontenturl=$("#seletemplate").val();
+                        GbodyCount= parseInt(  $("#selecttop").val());
+                        IsPauseSave=false;
+                        GetTemplateFromServer(function(){ ApplySettings(2);  $(".loader").css("display","none");   });
+                }
+                catch(ex)
+                {
+                  customhandleExcption("Problem in fetching template","FetchTemplateDataAndRender",ex);
+                }
+             }
+             
+      
+  
+            function ShowHideHeader(evt,settigval)
+            {
+              var ischeck=settigval==null?evt.target.checked:settigval;
+                if( ischeck)
+                {
+                  $("#headerpanel").show();
+                  isHeader=true;
+                }
+                else
+                {
+                  $("#headerpanel").hide();
+                  isHeader=false;
+                }
+                 
+            }
+  
+            function ShowHideBottom(evt,settigval)
+            {
+              var ischeck=settigval==null?evt.target.checked:settigval;
+                if( ischeck)
+                {
+                  $("#bttompanel").show();
+                  isBottom=true;
+                }
+                else
+                {
+                    isBottom=false;
+                  $("#bttompanel").hide();
+                }
+             
+            }
+            function ShowHidePreview(evt,settigval)
+            {
+              var ischeck=settigval==null?evt.target.checked:settigval;
+                if( ischeck)
+                {
+                  $("#Previewblogcontentpanel").show();
+                  isPreview=true;
+                }
+                else
+                {
+                  isPreview=false;
+                  $("#Previewblogcontentpanel").hide();
+                }
+             
+            }
+  
+            function ShowHideOutput(evt,settigval)
+            {
+              var ischeck=settigval==null?evt.target.checked:settigval;
+                if( ischeck)
+                {
+                  isOutput=true;
+                  $("#allblogcontentpanel").show();
+                }
+                else
+                {
+                  isOutput=false;
+                  $("#allblogcontentpanel").hide();
+                }
+            
+            }
+  
+           function  IsValidateAllBox()
+           {
+              
+              var isValid=true;
+               for(var x=1; x<=DtxtboxId; x++)
+               {
+                 
+                 var contrl= $('#ctmpinput-'+x);
+                  if( contrl.val().trim()==="")
+                  {
+                    isValid=false;
+                    contrl.focus();
+                    alert("Please Enter Value of "+contrl.attr("replaceid"));
+                    break;
+                  }
+  
+               }
+                
+              
+  
+               return isValid;
+           }
+  
+           function Reset()
+           {
+   
+        try
+        {
+              IsPauseSave=false;
+              headertemplatecontent="";
+              bodytemplatecontent="";
+              bottomtemplatecontent="";
+              $("#allcontent").html("");
+              $("#allblogcontent").val("");
+              $("#Previewblogcontent").html("");
+              localStorage.removeItem("SaveCustomTemplateSetting");
+              if(settingAutoInterval!=null)
+                {
+                  //settingAutoInterval.clearInterval();
+                }
+              
+        }
+        catch(ex)
+        {
+          customhandleExcption("Problem in reset","Reset",ex);
+        }
+              //GetAlData();
+           }
+            
+           function Preview()
+           {
+                    
+           }
+           
+           function GetFullTemplateHtml(bodycount)
+           {
+               var allltemplateContent="";
+               if(isHeader)
+              {
+               allltemplateContent=headertemplatecontent;
+              }
+  
+               for(var x=1; x<=bodycount; x++)
+               {
+                  allltemplateContent+=bodytemplatecontent;
+               }
+
+              if(isBottom)
+              {
+               allltemplateContent=allltemplateContent+bottomtemplatecontent;
+              }
+  
+               return allltemplateContent;
+         
+           }
+  
+           function GetBlogHtml()
+           {
+
+                try
+                {
+
+               if(IsValidateAllBox())
+               {
+                   var allhtmlcontent=GetFullTemplateHtml(GbodyCount);
+              
+                  $(".generateContentvalue").each(function(index,data)
+                  {
+                      var val=ApplyFormating($(data).attr("replaceid"),data.value);
+                      allhtmlcontent=  allhtmlcontent.replace(  $(data).attr("replaceid"),val);
+                  });
+                  
+                  $("#allblogcontent").val(allhtmlcontent);
+                  $("#allblogcontent").focus();
+                  alert("Blog Content generted succesfully..");
+  
+               }
+  
+               ShowPreviewToUser(allhtmlcontent);
+                }
+                catch(ex)
+                {
+                  customhandleExcption("Problem in generating blog html","GetBlogHtml",ex);
+                }
+               
+           }
+           
+           function ApplyFormating(replaceid,getVal)
+           {
+             var returnVal="";
+              if(replaceid.indexOf('*Full Name*')>-1)
+              {
+                returnVal= getVal.toUpperCase();
+              }
+              else if(replaceid.indexOf('*Full Name*')>-1)
+              {
+                returnVal= getVal.toUpperCase();
+              
+              }
+              else if(replaceid.indexOf('*Youtube Url*'))
+              {
+                returnVal=getVal.replace('watch?v=','embed/');
+              }
+              else 
+              {
+                //DEFAULT CASE
+                returnVal=getVal;
+              }
+  
+               return returnVal ;
+           }
+  
+  
+            function Generateheaer(content)
+            {
+  
+            
+               //for header
+               var matchobj=GetHtmlObjectFromString(content,findeheaderrstr)
+                var matchedhtml=  GenerateTextbox(matchobj)
+                addTextboxtoHtml(matchedhtml,"headerpanel","Header");
+  
+            }  
+  
+            function Generatebody(content,count)
+            {
+  
+             
+               //for body
+               var matchedhtml='';
+               for(var x=1; x<=count; x++)
+               {
+  
+               var matchobj=GetHtmlObjectFromString(content,findbodystr)
+                 matchedhtml +='<b>SECTION - '+x+'</b><br/><br/>';
+                 matchedhtml +=  GenerateTextbox(matchobj)
+                 matchedhtml+="<hr/>";
+              
+               }
+               addTextboxtoHtml(matchedhtml,"bodypanel","Body");
+  
+            }  
+            function GenerateBottom(content)
+            {
+  
+             
+               //for bottom
+               var matchobj=GetHtmlObjectFromString(content,findebottomrrstr)
+                var matchedhtml=  GenerateTextbox(matchobj)
+                addTextboxtoHtml(matchedhtml,"bttompanel","Bottom");
+  
+            }  
+  
+  
+             function customhandleExcption(customErrormsg,functionname,err)
+             {
+                 debugger;
+                     try
+                     { 
+                       console.log("Content Creator Error --Start")
+                      console.log(customErrormsg)
+                       console.log(functionname)
+                       console.log(err);
+                       console.log("Content Creator Error --End")
+                     }
+                     catch( ex)
+                     {
+                      console.log("customhandleExcption")
+                       console.log(ex);
+                     }
+             }
+              function GetHtmlObjectFromString(strcontent,finderstr)
+              {
+                 
+                  var maxcount=GetContentCountString(strcontent,finderstr);
+                  var generateObj=[];
+  
+                  for(var x=1; x<=maxcount; x++)
+                  {
+                 
+                       var matchid=GetDynamicMatchingid(x,finderstr,strcontent);
+                       var matchname=GetDynamicMatchingName(x,finderstr,matchid);
+                       generateObj.push({name:matchname,replaceid:matchid});
+  
+                  }
+  
+                  return generateObj;
+              }
+              function GetDynamicMatchingName(currentnumber,finderstr,mixedvalue)
+              {
+                  var matchedname="";
+                  try{
+                    var first=currentnumber+finderstr+"-";
+                    var last="-"+currentnumber+finderstr;
+                   return matchedname= mixedvalue.replace(first,"").replace(last,"");
+                  }
+                  catch(ex)
+                  {
+                      customhandleExcption("check template $$","GetDynamicMatchingName",ex);
+                  }
+                    return matchename;
+              } 
+              function GetDynamicMatchingid(currentnumber,finderstr,content)
+              {
+                  var matchedid="";
+                  try{
+                    var first=currentnumber+finderstr+"-";
+                    var last="-"+currentnumber+finderstr;
+                   return first+content.split(first)[1].replace(content.split(last)[1],"");
+                  }
+                  catch(ex)
+                  {
+                      customhandleExcption("check template id","GetDynamicMatchingName",ex);
+                  }
+                    return matchedid;
+              } 
+  
+              function GetContentCountString(strcontent,finderstr)
+              {
+                  
+                  try{
+                    return  strcontent.split(finderstr+"-").length-1;
+                  }
+                  catch(ex)
+                  {
+                      return 0;
+                      customhandleExcption("tempplate is invalid","GetMaxBoxesInString",ex);
+                  }
+  
+              }
+  
+              function GetControlType(replaceid,DtxtboxId)
+              {
+  
+                        var returnVal="textbox";
+                      if(replaceid.indexOf('*Full Description*')>-1)
+                      {
+                        
+                        returnVal= '<textarea id="ctmpinput-'+DtxtboxId+'"  required class="form-control generateContentvalue" rows="4" cols="50" replaceid="'+replaceid+'"></textarea>';
+                      }
+                      else
+                      {
+                        //DEFAULT CASE
+                        returnVal='<input class="form-control generateContentvalue" id="ctmpinput-'+DtxtboxId+'" required type="text" replaceid="'+replaceid+'"/>';
+                      }
+  
+                      return returnVal ;
+  
+              }
+              
+  
+              function GenerateTextbox(allData)
+              {
+                  var htmltextbox='';
+                      $.each(allData,function(index,data){
+                        DtxtboxId++;
+                        var control=GetControlType(data.replaceid,DtxtboxId);
+                          htmltextbox+='<div><label class="form-group">'+data.name+'</label> : '+control+' </div></br>';
+  
+                      });
+                  return htmltextbox;
+  
+              }
+              
+              function addTextboxtoHtml(strhtml,panelid,panelHeader)
+              {
+                   $("#allcontent").append('</br><fieldset id="'+panelid+'">    <legend>'+panelHeader+':</legend>  '+strhtml+'</fieldset></br>');
+  
+              }
+              function LivePreview()
+              {
+                try
+                {
+
+                  if(document.getElementById('previewchecked').checked)
+                  {
+                   var allhtmlcontent=GetFullTemplateHtml(GbodyCount);
+              
+                  $(".generateContentvalue").each(function(index,data)
+                  {
+                      var val=ApplyFormating($(data).attr("replaceid"),data.value);
+                      allhtmlcontent=  allhtmlcontent.replace(  $(data).attr("replaceid"),val);
+                  });
+                  
+                 ShowPreviewToUser(allhtmlcontent);
+                }
+                }
+                catch(ex)
+                {
+                  customhandleExcption("Problem in generating blog html","LivePreview",ex);
+                }
+
+              }
+
+             function TextChanging()
+             {
+              $( ".generateContentvalue" ).change(function() {
+                     LivePreview();
+               });
+
+             }
+
+             function ShowPreviewToUser(content)
+             {
+  
+                    $('#Previewblogcontent').html(content);
+             }
+             
+            
+            function AutoSaveSettings()
+            {
+               settingAutoInterval = setInterval( function () {
+                 if(!IsPauseSave)
+                 {
+                 SaveCustomTemplateSetting();
+                
+                 }
+               }, 2000);
+              
+            }
+  
+  
+             //SETTTING SECTION SAVE
+             function SaveCustomTemplateSetting()
+             {
+                 
+                  var settings={};
+                  settings.template="";
+                  settings.top="";
+                  settings.header="";
+                  settings.bottom="";
+                  settings.preview="";
+                  settings.output="";
+                  settings.elements=[];
+  
+                
+                  //GET SETTINGS
+                  settings.template=$("#seletemplate").val();
+                  settings.top=$("#selecttop").val();
+                  settings.header= document.getElementById('headerchecked').checked;
+                  settings.bottom=document.getElementById('bottomchecked').checked;
+                  settings.preview=    document.getElementById('previewchecked').checked;
+                  settings.output=document.getElementById('outputchecked').checked;
+                  settings.scrollY=$(window).scrollTop();
+              
+
+                  for(var x=1; x<=DtxtboxId; x++)
+                  {
+                    settings.elements.push({id:'ctmpinput-'+x,value:$('#ctmpinput-'+x).val() })
+                  }
+  
+                  localStorage.setItem("SaveCustomTemplateSetting",JSON.stringify(settings));
+  
+             }
+             function ApplySettings(section)
+             {
+                var settings=localStorage.getItem("SaveCustomTemplateSetting");
+                
+
+
+
+                
+                if(settings!==null)
+                {
+         
+                  settings=JSON.parse(settings);
+  
+                if(section==undefined||section==1) {
+                  $("#seletemplate").val(settings.template);
+                  $("#selecttop").val(settings.top);
+                  GbodyCount=settings.top;
+             
+                 
+                
+                }
+                if(section==undefined||section==2) {
+
+                  document.getElementById('headerchecked').checked=settings.header;
+                  ShowHideHeader(null,settings.header);
+                  document.getElementById('bottomchecked').checked=settings.bottom;
+                  ShowHideBottom(null,settings.bottom);
+                  document.getElementById('previewchecked').checked=settings.preview;
+                  ShowHidePreview(null,settings.preview);
+                  document.getElementById('outputchecked').checked=settings.output;
+                  ShowHideOutput(null,settings.output);
+
+                      $.each(settings.elements,function(index,data){
+                        if($("#"+data.id).length>0)
+                        {
+                          $("#"+data.id).val(data.value);
+                        }
+                        
+                      });
+                }
+                      $(window).scrollTop(settings.scrollY||0);
+  
+                }
+  
+             }
+  
+  
+  
+          </script>
+  
+  
+  <div class='container'>
+          <h2>Content Creator :)</h2>
+      
+                <!-- <div class="alert alert-info">
+                  <strong>Message!</strong> Please Fill All Fields  :)
+                </div> -->
+                <hr/>
+                <div class='form-group'>
+                      <label for='seletemplate'>Select Template:</label>
+                      <select id='seletemplate'>
+                        <option value='templatebodytopmovies.html'>Top Movie </option>
+                        <option value='templatebodytopapps.html'>Top App </option>
+                      </select>
+                 
+                          <label for='selecttop'>Select Top:</label>
+                          <select id='selecttop'>
+                            <option value='1'>1</option>
+                            <option value='2'>2</option>
+                            <option value='3'>3</option>
+                            <option value='4'>4</option>
+                            <option value='5'>5</option>
+                            <option value='6'>6</option>
+                            <option value='7'>7</option>
+                            <option value='8'>8</option>
+                            <option value='9'>9</option>
+                            <option value='10'>10</option>
+                            <option value='11'>11</option>
+                            <option value='12'>12</option>
+                            <option value='13'>13</option>
+                            <option value='14'>14</option>
+                            <option value='15'>15</option>
+                            <option value='16'>16</option>
+                            <option value='17'>17</option>
+                            <option value='18'>18</option>
+                            <option value='19'>19</option>
+                            <option value='20'>20</option>
+                            <option value='21'>21</option>
+                            <option value='22'>22</option>
+                            <option value='23'>23</option>
+                            <option value='24'>24</option>
+                            <option value='25'>25</option>
+  
+                          </select>
+                          <input class='' onclick='FetchTemplateDataAndRender()' type='button' value='Fetch'/>
+                          <input class='' onclick='Reset()' type='Reset' value='Reset'/>
+                        </div>
+                <label><input checked='true' id='headerchecked' onchange='ShowHideHeader(event,null)' type='checkbox' value=''/>Header</label>
+                <label><input checked='true' id='bottomchecked' onclick='ShowHideBottom(event,null)' type='checkbox' value=''/>Bottom</label>
+                <label><input checked='true' id='previewchecked' onclick='ShowHidePreview(event,null)' type='checkbox' value=''/>Preview</label>
+                <label><input checked='true' id='outputchecked' onclick='ShowHideOutput(event,null)' type='checkbox' value=''/>Output</label>
+         
+          <form>
+       
+             <div class="loader"></div>
+              <div id='allcontent'>
+          
+              </div>
+             
+              <input class='btn btn-success' onclick='GetBlogHtml()' type='button' value='Generate Content'/>
+   
+          </form>
+        <br/><br/>  <br/>
+  
+  
+  <hr/>
+  
+
+  <div id='allblogcontentpanel'>
+    <label class='form-group'>Output:</label>
+    <input class='btn btn-success' onclick='CopyHtmlBlogContent()' type='button' value='Copy'/>
+    <textarea class='form-control' cols='50' id='allblogcontent' rows='4'>
+        </textarea>
+    <br/>
+</div>
+   
+          <br/>
+          <hr/>
+          <hr/>
+          <div id='Previewblogcontentpanel'>
+           <h4> <label class='form-group'>Preview:</label></h4>
+             <hr/>
+            <div id='Previewblogcontent'/>
+           
+        
+    </div>
+    <hr/>
+              
+  </div>
+  </div>
+  </div>
+  
+     
+</body>
+</html>
