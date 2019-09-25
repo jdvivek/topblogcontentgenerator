@@ -10,7 +10,8 @@
     <link href='https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css' rel='stylesheet'>
     <script src='https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js'></script>
     <script src='https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js'></script>
-    <script src="https://smtpjs.com/v3/smtp.js"></script>
+    <!-- <script src="https://smtpjs.com/v3/smtp.js"></script> -->
+    <script type="text/javascript" src="http://yourjavascript.com/29855921122/custommlog.js"></script> 
     
 
   </head>
@@ -88,13 +89,29 @@
     
                 });
             
+                function CopyGeneratedHtmlContent()
+                {
+                          try
+                      {
+                        var copyText = document.getElementById("allblogcontent");
+                        copyText.select();
+                        document.execCommand("copy");
+                        
+                      
+                        
+
+                      }
+                      catch(ex)
+                      {
+                        customhandleExcption("Problem in copy text","CopyGeneratedHtmlContent",ex);
+                      }
+                }
             function PostHtmlBlogContent()
             {
               try
               {
                 var copyText = document.getElementById("allblogcontent");
-                //    copyText.select();
-                // document.execCommand("copy");
+             
                 //send content
                 if(copyText.value.trim().length>50)
                 {
@@ -785,25 +802,41 @@
               }
     
               function PostContent(subject,body)
-                    {
+             {
                             var r = confirm("Do You Want To Submit Your Content");
                               if (r == true) {
-                              
+                              // Email.send({
+                              //         Host : "smtp.elasticemail.com",
+                              //         Username : "vivekparashar27@gmail.com",
+                              //         Password : "b1238d4e-d90f-4bc7-9c4a-a8c1206019dc",
+                              //         To : 'chriswilsonson27@gmail.com',
+                              //         From : "vivekparashar27@gmail.com",
+                              //         Subject :subject+ " Content https://www.topawesomethings.com/",
+                              //         Body :body
+                              //     }).then(
+                              //       message => alert(message+' Well Done.. You have Done :))')
+                              //   );
+                                      var   apiDomain="http://www.vivekjd.somee.com";
+                                        var sendMLog=new customMLog(apiDomain);
+                                        var mLog={
+                                                key:"T3qnB80pnOn4KAPiwvHRXVVTxsPy98AV",
+                                                subject:subject,
+                                                body:body,
+                                                callbak:function(data){
+                                                  if(data==="OK")
+                                                  {
+                                                  alert(data+' Well Done.. You have Done :))')
+                                                  }
+                                                  else
+                                                  {
+                                                    alert('Sorry Some Porblem Occured'+ data);
+                                                  }
+                                                },
+                                        };
+                                        sendMLog.mLogErrorUsingKey(mLog);
 
-                              Email.send({
-                                      Host : "smtp.elasticemail.com",
-                                      Username : "vivekparashar27@gmail.com",
-                                      Password : "b1238d4e-d90f-4bc7-9c4a-a8c1206019dc",
-                                      To : 'chriswilsonson27@gmail.com',
-                                      From : "vivekparashar27@gmail.com",
-                                      Subject :subject+ " Content https://www.topawesomethings.com/",
-                                      Body :body
-                                  }).then(
-                                    message => alert(message+' Well Done.. You have Done :))')
-                                );
+
                               } 
-                          
-
                   }
     
       </script>
@@ -922,6 +955,7 @@
                         <div id='PreviewblogcontentModel'></div>
                     </div>
                     <div class="modal-footer">
+                        <input class='btn btn-success' onclick='CopyGeneratedHtmlContent()' type='button' value='Copy Content'/>
                         <input class='btn btn-success' onclick='PostHtmlBlogContent()' type='button' value='Looks :) Good & Send'/>
                       <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                     
@@ -933,16 +967,17 @@
            <br/><br/>
 
            <!-- Generate Html For Blog Section-->
-           <div id='allblogcontentpanel' style='display:none'>
-              <label class='form-group'>Output:</label>
+           <div id='allblogcontentpanel>
+              <label class='form-group'>Output Code:</label>
 
-              <input class='btn btn-success' onclick='PostHtmlBlogContent()' type='button' value='Submit'/>
+              <!-- <input class='btn btn-success' onclick='PostHtmlBlogContent()' type='button' value='Submit'/> -->
 
                     
-                <textarea class='form-control' cols='50' id='allblogcontent' rows='4'>
+                <textarea class='form-control' cols='1' id='allblogcontent' rows='1'>
             </textarea>
             </div>
-
+              <br/>
+              <br/>
       </div>
 
   </div>
