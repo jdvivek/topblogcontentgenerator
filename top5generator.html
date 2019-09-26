@@ -10,9 +10,10 @@
     <link href='https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css' rel='stylesheet'>
     <script src='https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js'></script>
     <script src='https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js'></script>
-  
-          <!-- <script src="https://smtpjs.com/v3/smtp.js"></script> -->
-          <script type="text/javascript" src="http://yourjavascript.com/29855921122/custommlog.js"></script> 
+    <script src="https://smtpjs.com/v3/smtp.js"></script>  
+    <!-- <script type="text/javascript" src="http://yourjavascript.com/94011572691/custommlog.js"></script> -->
+      
+         
 
   </head>
  
@@ -22,9 +23,6 @@
  
   <!--Main Section-->
   <div id="maincontentcreatorpanel">
-    <!--Custom Liberary Section-->
-
-    <script type="text/javascript" src="http://yourjavascript.com/29855921122/custommlog.js"></script> 
 
     <!--Style Section-->
         <style>
@@ -447,6 +445,7 @@
 
                   try
                   {
+                    $("#msgDialog").html("");
 
                 if(IsValidateAllBox())
                 {
@@ -809,38 +808,45 @@
              {
                             var r = confirm("Do You Want To Submit Your Content");
                               if (r == true) {
-                              // Email.send({
-                              //         Host : "smtp.elasticemail.com",
-                              //         Username : "vivekparashar27@gmail.com",
-                              //         Password : "b1238d4e-d90f-4bc7-9c4a-a8c1206019dc",
-                              //         To : 'chriswilsonson27@gmail.com',
-                              //         From : "vivekparashar27@gmail.com",
-                              //         Subject :subject+ " Content https://www.topawesomethings.com/",
-                              //         Body :body
-                              //     }).then(
-                              //       message => alert(message+' Well Done.. You have Done :))')
-                              //   );
-                                      var   apiDomain="http://www.vivekjd.somee.com";
-                                        var sendMLog=new customMLog(apiDomain);
-                                        var mLog={
-                                                key:"T3qnB80pnOn4KAPiwvHRXVVTxsPy98AV",
-                                                subject:subject,
-                                                body:body,
-                                                callbak:function(data){
-                                                  if(data==="OK")
-                                                  {
-                                                  alert(data+' Well Done.. You have Done :))')
-                                                  }
-                                                  else
-                                                  {
-                                                    alert('Sorry Some Porblem Occured'+ data);
-                                                  }
-                                                },
-                                        };
-                                        sendMLog.mLogErrorUsingKey(mLog);
+                               Email.send({
+                                       Host : "smtp.elasticemail.com",
+                                   Username : "vivekparashar27@gmail.com",
+                                     Password : "b1238d4e-d90f-4bc7-9c4a-a8c1206019dc",
+                                     To : 'chriswilsonson27@gmail.com',
+                                      From : "vivekparashar27@gmail.com",
+                                    Subject :subject+ " Content https://www.topawesomethings.com/",
+                                    Body :body
+                                 }).then(function(message){
 
-
+                                  $("#btnpreviemodalcose").click();
+                                  $("#thankYouModel").modal('toggle');
+                                  $("#msgDialog").html("<p><strong>Thank You! :)<strong></p> You have Created Content Succesfully and It has been sent to admin. Soon You will see you post publicly.");
+                                
+                                 });
+                                   
+                                
                               } 
+                                      // var   apiDomain="http://www.vivekjd.somee.com";
+                                      //   var sendMLog=new customMLog(apiDomain);
+                                      //   var mLog={
+                                      //           key:"T3qnB80pnOn4KAPiwvHRXVVTxsPy98AV",
+                                      //           subject:subject,
+                                      //           body:body,
+                                      //           callbak:function(data){
+                                      //             if(data==="OK")
+                                      //             {
+                                      //             alert(data+' Well Done.. You have Done :))')
+                                      //             }
+                                      //             else
+                                      //             {
+                                      //               alert('Sorry Some Porblem Occured'+ data);
+                                      //             }
+                                      //           },
+                                      //   };
+                                      //   sendMLog.mLogErrorUsingKey(mLog);
+
+
+                             
                   }
     
       </script>
@@ -952,37 +958,73 @@
                   <!-- Modal content-->
                   <div class="modal-content">
                     <div class="modal-header">
+                    
+
+                
                       <button type="button" class="close" data-dismiss="modal">&times;</button>
                       <h4 class="modal-title">Your Page Preview</h4>
+                      <br/>
+                        <div class="alert alert-danger">
+                            Send Copy Content& Images On This Mail Id: 
+                            <a href="mailto:chriswilsonson27@gmail.com">chriswilsonson27@gmail.com</a>
+                          </div>
                     </div>
                     <div class="modal-body" style="max-height: 500px; overflow:scroll;">
+                       
                         <div id='PreviewblogcontentModel'></div>
                     </div>
                     <div class="modal-footer">
-                        <input class='btn btn-success' onclick='CopyGeneratedHtmlContent()' type='button' value='Copy Content'/>
+                        <input class='btn btn-success' onclick='CopyGeneratedHtmlContent()' type='button' value='Copy'/>
                         <input class='btn btn-success' onclick='PostHtmlBlogContent()' type='button' value='Looks :) Good & Send'/>
-                      <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                      <button type="button" class="btn btn-default" data-dismiss="modal" id="btnpreviemodalcose">Close</button>
                     
                     </div>
                   </div>
 
           </div>
             </div>
+
+           <!-- Thank You Model Or message  Section-->
+              <div id="thankYouModel" class="modal fade" role="dialog">
+                  <div class="modal-dialog">
+                
+                    <!-- Modal content-->
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title">Message</h4>
+                      </div>
+                      <div class="modal-body">
+                          <div class="alert alert-success">
+                             <div id="msgDialog">
+                            </div>  
+                      </div>
+                      <div class="modal-footer">
+                        
+                    
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                      </div>
+                    </div>
+                
+                  </div>
+                  </div>   
+              </div>
+
            <br/><br/>
 
            <!-- Generate Html For Blog Section-->
-           <div id='allblogcontentpanel>
-              <label class='form-group'>Output Code:</label>
-
-              <!-- <input class='btn btn-success' onclick='PostHtmlBlogContent()' type='button' value='Submit'/> -->
-
-                    
+           <div id='allblogcontentpanel'>
+                <label class='form-group'>Output Code:</label>
+                <!-- <input class='btn btn-success' onclick='PostHtmlBlogContent()' type='button' value='Submit'/> -->
                 <textarea class='form-control' cols='1' id='allblogcontent' rows='1'>  </textarea>
-          
             </div>
               <br/>
               <br/>
+
       </div>
+
+      <!-- External Liberary Section-->
+        <script src="https://smtpjs.com/v3/smtp.js"></script>  
 
   </div>
 
