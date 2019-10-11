@@ -491,7 +491,9 @@
                   // If Url Comes From Youtube Desktop
                    if(getVal.indexOf('=')!=-1)
                    {
-                    returnVal='https://www.youtube.com/embed/'+getVal.split('=')[1];
+
+                    
+                    returnVal='https://www.youtube.com/embed/'+getVal.split('=')[1].split('&')[0];
                    }
                    // If Url Comes From Sharing
                    else
